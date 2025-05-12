@@ -1,11 +1,5 @@
-
-export const config = {
-  runtime: "edge",
-};
-
-export default async function handler(req) {
-  const body = await req.json();
-  const message = body.message;
+export default async function handler(req, res) {
+  const { message } = req.body;
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -20,8 +14,5 @@ export default async function handler(req) {
   });
 
   const data = await response.json();
-  const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn't get a response.";
-  return new Response(JSON.stringify({ reply }), {
-    headers: { "Content-Type": "application/json" },
-  });
+  res.status(200).json({ reply: data.choices[0].message.content });
 }
